@@ -4,10 +4,13 @@
 import streamlit as st
 import numpy as np
 import joblib
+import matplotlib.pyplot as plt
 
-# Load model & scaler
+
 model = joblib.load("heart_model.pkl")
 scaler = joblib.load("heart_scaler.pkl")
+precision, recall = joblib.load("pr_curve.pkl")
+
 
 st.title("❤️ Heart Attack Risk Prediction")
 st.write("Predict heart attack risk using clinical inputs")
@@ -32,12 +35,12 @@ obesity = st.selectbox("Obesity", ["No", "Yes"])
 
 bmi = st.number_input("BMI", 15.0, 45.0, 24.0)
 
-# Convert categorical to numeric
+
 diabetes = 1 if diabetes == "Yes" else 0
 smoking = 1 if smoking == "Yes" else 0
 obesity = 1 if obesity == "Yes" else 0
 
-# Prediction
+
 if st.button("Predict Heart Attack Risk"):
     input_data = np.array([[
         cholesterol,
@@ -58,4 +61,14 @@ if st.button("Predict Heart Attack Risk"):
         st.error(f"⚠️ {name} has HIGH Heart Attack Risk\n\nProbability: {probability:.2f}")
     else:
         st.success(f"✅ {name} has LOW Heart Attack Risk\n\nProbability: {probability:.2f}")
+st.divider()
+st.subheader("📈 Model Evaluation – Precision–Recall Curve")
+
+fig, ax = plt.subplots()
+ax.plot(recall, precision)
+ax.set_xlabel("Recall")
+ax.set_ylabel("Precision")
+ax.set_title("Precision–Recall Curve")
+st.pyplot(fig)
+
 
